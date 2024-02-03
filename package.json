@@ -1,0 +1,35 @@
+{
+  "name": "scribo-worksheet-cli",
+  "version": "1.0.0",
+  "description": "",
+  "author": {
+    "name": "Tokisaki Yuu",
+    "email": "tokisakiyuu@qq.com",
+    "url": "https://github.com/tokisakiyuu"
+  },
+  "type": "module",
+  "bin": "dist/cli.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "ink": "^4.4.1",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@taalpha/prettier-config": "^1.0.0",
+    "@taalpha/tsconfig": "^1.2.0",
+    "@types/react": "^18.2.52",
+    "typescript": "^5.3.3"
+  },
+  "prettier": "@taalpha/prettier-config"
+}

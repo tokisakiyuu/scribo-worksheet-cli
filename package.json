@@ -8,33 +8,31 @@
     "url": "https://github.com/tokisakiyuu"
   },
   "type": "module",
-  "bin": "dist/cli.js",
+  "bin": {
+    "scribo": "./dist/main.js"
+  },
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "dev": "tsx ./src/cli.tsx",
-    "build": "tsc"
+    "scribo": "tsx ./src/main.ts",
+    "build": "tsc",
+    "watch": "tsc -w"
   },
-  "keywords": [],
-  "license": "MIT",
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "ink": "^4.4.1",
-    "react": "^18.2.0",
-    "react-use": "^17.5.0",
-    "terminal-kit": "^3.0.1"
-  },
+  "keywords": [],
+  "license": "MIT",
   "devDependencies": {
     "@taalpha/prettier-config": "^1.0.0",
     "@taalpha/tsconfig": "^1.2.0",
     "@types/node": "^20.11.17",
-    "@types/react": "^18.2.52",
-    "@types/terminal-kit": "^2.5.6",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.3"
   },
-  "prettier": "@taalpha/prettier-config"
+  "prettier": "@taalpha/prettier-config",
+  "dependencies": {
+    "commander": "^12.0.0"
+  }
 }

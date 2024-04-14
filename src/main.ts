@@ -2,7 +2,7 @@
 import { program } from 'commander'
 import * as command from './command.js'
 import path from 'path'
-import { currentGitBranchName, tryCurrentGitBaseBranchName } from './utils.js'
+import { currentGitBranchName } from './utils.js'
 
 program.name('scribo')
 
@@ -22,11 +22,7 @@ program
   .description('start a task')
   .argument('<key>', 'jira issue key. like DEV-999')
   .option('--repo <repo>', 'which github repo', path.basename(process.cwd()))
-  .option(
-    '--base <base>',
-    'which branch is the new branch based on',
-    tryCurrentGitBaseBranchName('staging'),
-  )
+  .option('--base <base>', 'which branch is the new branch based on', 'staging')
   .option('--head <head>', 'new branch name')
   .action(command.start)
 
@@ -35,18 +31,10 @@ program
   .description('end a task')
   .argument('<key>', 'jira issue key. like DEV-999')
   .option('--repo <repo>', 'which github repo', path.basename(process.cwd()))
-  .option(
-    '--base <base>',
-    'which branch is the new branch based on',
-    tryCurrentGitBaseBranchName('staging'),
-  )
+  .option('--base <base>', 'which branch is the new branch based on', 'staging')
   .option('--head <head>', 'new branch name', currentGitBranchName())
   .action(command.end)
 
-program
-  .command('init')
-  .description('init your client')
-  .argument('<token>', 'your token')
-  .action(command.saveToken)
+program.command('setup').description('setup your client').action(command.setup)
 
 program.parse()

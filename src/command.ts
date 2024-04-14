@@ -1,9 +1,19 @@
 import { createApolloClient } from './apollo-client.js'
-import { ListJiraIssues } from './graphql.js'
+import {
+  ListJiraIssues,
+  ConfigureAccount,
+  Issue,
+  WorkBranchNames,
+  SearchPullRequest,
+  StartTask,
+  EndTask,
+} from './graphql.js'
 import { default as openx, apps } from 'open'
 import fs from 'node:fs'
 import { homedir } from 'node:os'
 import path from 'node:path'
+import prompts from 'prompts'
+import { currentGitBranchName } from './utils.js'
 
 const tokenFilePath = `${homedir()}/.config/scribo-worksheet/token`
 
@@ -33,15 +43,134 @@ export async function open(key: string) {
   })
 }
 
-export async function start(key: string, options: Record<string, string>) {
-  console.log(key, options)
+interface IssueToggleParams {
+  repo: string
+  base: string
+  head?: string
 }
 
-export async function end(key: string, options: Record<string, string>) {
-  console.log(key, options)
+async function getIssueTitle(key: string) {
+  const client = createApolloClient()
+  const res = await client.query({
+    query: Issue,
+    variables: { taskId: key },
+  })
+  return res.data.task.title
 }
 
-export function saveToken(token: string) {
+async function getWorkBranchs(key: string, repo: string) {
+  const client = createApolloClient()
+  const res = await client.query({
+    query: WorkBranchNames,
+    variables: {
+      taskId: key,
+      repo,
+    },
+  })
+  return res.data.workBranchNames
+}
+
+function makeBranchName(title: string) {
+  return title
+    .replace(/[^a-zA-Z\s]/g, '')
+    .split(/\s+/)
+    .slice(0, 8)
+    .join('-')
+    .toLowerCase()
+}
+
+async function getOpendPR(repo: string, key: string) {
+  const client = createApolloClient()
+  const res = await client.query({
+    query: SearchPullRequest,
+    variables: {
+      repoName: repo,
+      keywordInTitle: key,
+    },
+  })
+  const result = res.data.github.searchPullRequest as any[]
+  return result
+    .filter(item => item.state === 'open')
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .at(0)
+}
+
+async function getIssueWorkBranchName(repo: string, key: string) {
+  // 检查有没有已经打开的PR，有的话就获取那个PR对应的head分支名
+  const opendPR = await getOpendPR(repo, key)
+  if (opendPR) opendPR.head
+  // 如果没有打开的PR，就使用一个新的head分支名
+  const branchs = await getWorkBranchs(key, repo)
+  const stage = branchs.length
+  return `${key}-${stage ? `${stage}-` : ''}${makeBranchName(await getIssueTitle(key))}`
+}
+
+export async function start(key: string, options: IssueToggleParams) {
+  const { repo, base, head } = options
+  const client = createApolloClient()
+  const branchName = head || (await getIssueWorkBranchName(repo, key))
+  await client.mutate({
+    mutation: StartTask,
+    variables: {
+      issueId: key,
+      repo,
+      base,
+      head: branchName,
+    },
+  })
+  // TODO: 切换到对应分支
+}
+
+export async function end(key: string, options: IssueToggleParams) {
+  const { repo, base, head } = options
+  const client = createApolloClient()
+  await client.mutate({
+    mutation: EndTask,
+    variables: {
+      issueId: key,
+      repo,
+      base,
+      head,
+    },
+  })
+  // TODO: 切换到base分支
+}
+
+export async function setup() {
+  const { token, atlassian_app_token, github_access_token } = await prompts([
+    {
+      type: 'text',
+      name: 'token',
+      message: 'Your app token',
+    },
+    {
+      type: 'text',
+      name: 'atlassian_app_token',
+      message: 'Your atlassian app token',
+    },
+    {
+      type: 'text',
+      name: 'github_access_token',
+      message: 'Your github access token',
+    },
+  ])
+  saveAppToken(token)
+  const client = createApolloClient()
+  await client.mutate({
+    mutation: ConfigureAccount,
+    variables: {
+      input: {
+        atlassian_app_token,
+        github_access_token,
+      },
+    },
+  })
+}
+
+function saveAppToken(token: string) {
   const dir = path.dirname(tokenFilePath)
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true })

@@ -101,7 +101,7 @@ async function getOpendPR(repo: string, key: string) {
 async function getIssueWorkBranchName(repo: string, key: string) {
   // 检查有没有已经打开的PR，有的话就获取那个PR对应的head分支名
   const opendPR = await getOpendPR(repo, key)
-  if (opendPR) opendPR.head
+  if (opendPR) return opendPR.head
   // 如果没有打开的PR，就使用一个新的head分支名
   const branchs = await getWorkBranchs(key, repo)
   const stage = branchs.length
@@ -122,6 +122,7 @@ export async function start(key: string, options: IssueToggleParams) {
     },
   })
   // TODO: 切换到对应分支
+  console.log(`-> 切换到远程分支 ${branchName} 并拉取`)
 }
 
 export async function end(key: string, options: IssueToggleParams) {
@@ -137,6 +138,7 @@ export async function end(key: string, options: IssueToggleParams) {
     },
   })
   // TODO: 切换到base分支
+  console.log(`-> 切换到本地分支 ${base} 并拉取`)
 }
 
 export async function setup() {

@@ -35,7 +35,7 @@ export function checkoutFromRemoteBranch(branchName: string) {
   if (localBranches.includes(branchName)) {
     execSync(`git checkout ${branchName}`)
   } else {
-    execSync(`git fetch origin`)
+    execSync(`git fetch`)
     execSync(`git checkout -b ${branchName} origin/${branchName}`)
   }
   execSync('git pull')

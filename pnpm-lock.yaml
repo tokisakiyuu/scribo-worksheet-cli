@@ -41,8 +41,8 @@ dependencies:
 
 devDependencies:
   '@taalpha/prettier-config':
-    specifier: ^1.0.0
-    version: 1.0.0
+    specifier: ^1.2.0
+    version: 1.2.0(prettier@3.2.5)(typescript@5.4.3)
   '@taalpha/tsconfig':
     specifier: ^1.2.0
     version: 1.2.0
@@ -320,8 +320,15 @@ packages:
       call-bind: 1.0.7
     dev: false
 
-  /@taalpha/prettier-config@1.0.0:
-    resolution: {integrity: sha512-3cPnYuI4rJB1AyLesorPsyuDKtJi8svxZ4njG7x3U9UKZXx1S2zxUJ00YkmT31SCcsd21IS+Lje5d1tdcKOCUw==}
+  /@taalpha/prettier-config@1.2.0(prettier@3.2.5)(typescript@5.4.3):
+    resolution: {integrity: sha512-sNDcCr1qPT8Vhw/7J9zxp1LfVsBjk2JuN3g5EY/+OK8+CswXyqH7yUEpCa2wWndqwaf/XuxXULlK/aICw0ORpQ==}
+    dependencies:
+      prettier-plugin-organize-imports: 3.2.4(prettier@3.2.5)(typescript@5.4.3)
+    transitivePeerDependencies:
+      - '@volar/vue-language-plugin-pug'
+      - '@volar/vue-typescript'
+      - prettier
+      - typescript
     dev: true
 
   /@taalpha/tsconfig@1.2.0:
@@ -1002,6 +1009,29 @@ packages:
     resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
     engines: {node: '>=0.10.0'}
     dev: false
+
+  /prettier-plugin-organize-imports@3.2.4(prettier@3.2.5)(typescript@5.4.3):
+    resolution: {integrity: sha512-6m8WBhIp0dfwu0SkgfOxJqh+HpdyfqSSLfKKRZSFbDuEQXDDndb8fTpRWkUrX/uBenkex3MgnVk0J3b3Y5byog==}
+    peerDependencies:
+      '@volar/vue-language-plugin-pug': ^1.0.4
+      '@volar/vue-typescript': ^1.0.4
+      prettier: '>=2.0'
+      typescript: '>=2.9'
+    peerDependenciesMeta:
+      '@volar/vue-language-plugin-pug':
+        optional: true
+      '@volar/vue-typescript':
+        optional: true
+    dependencies:
+      prettier: 3.2.5
+      typescript: 5.4.3
+    dev: true
+
+  /prettier@3.2.5:
+    resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: true
 
   /prompts@2.4.2:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}

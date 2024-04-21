@@ -25,10 +25,18 @@ export function currentGitBaseBranchName() {
   }
 }
 
-export function tryCurrentGitBaseBranchName(or: string) {
-  try {
-    return currentGitBaseBranchName()
-  } catch (err) {
-    return or
+export function getCurrentGitLocalBranchList() {
+  const result = execSync('git branch --list').toString().trim()
+  return result.split('\n').map(l => l.slice(2))
+}
+
+export function checkoutFromRemoteBranch(branchName: string) {
+  const localBranches = getCurrentGitLocalBranchList()
+  if (localBranches.includes(branchName)) {
+    execSync(`git checkout ${branchName}`)
+  } else {
+    execSync(`git fetch origin`)
+    execSync(`git checkout -b ${branchName} origin/${branchName}`)
   }
+  execSync('git pull')
 }

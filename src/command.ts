@@ -13,15 +13,29 @@ import fs from 'node:fs'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import prompts from 'prompts'
-import { currentGitBranchName } from './utils.js'
+import ora from 'ora'
+import chalk from 'chalk'
+import { checkoutFromRemoteBranch } from './utils.js'
 
 const tokenFilePath = `${homedir()}/.config/scribo-worksheet/token`
+const spinner = ora()
+
+function startLoading(text?: string) {
+  spinner.text = text ?? 'Loading'
+  spinner.start()
+}
+
+function endLoading() {
+  spinner.stop()
+}
 
 export async function ls() {
   const client = createApolloClient()
+  startLoading()
   const res = await client.query({
     query: ListJiraIssues,
   })
+  endLoading()
 
   console.log(
     res.data.tasks.map((task: any) => `${task.key} ${task.title}`).join('\n'),
@@ -30,6 +44,7 @@ export async function ls() {
 
 export async function open(key: string) {
   const client = createApolloClient()
+  startLoading('Processing')
   const res = await client.query({
     query: ListJiraIssues,
   })
@@ -38,6 +53,7 @@ export async function open(key: string) {
   if (!target) {
     console.error(`issue ${key} not found.`)
   }
+  endLoading()
   await openx(target.webURL, {
     app: { name: apps.browser },
   })
@@ -111,6 +127,7 @@ async function getIssueWorkBranchName(repo: string, key: string) {
 export async function start(key: string, options: IssueToggleParams) {
   const { repo, base, head } = options
   const client = createApolloClient()
+  startLoading('Processing')
   const branchName = head || (await getIssueWorkBranchName(repo, key))
   await client.mutate({
     mutation: StartTask,
@@ -121,13 +138,18 @@ export async function start(key: string, options: IssueToggleParams) {
       head: branchName,
     },
   })
-  // TODO: 切换到对应分支
-  console.log(`-> 切换到远程分支 ${branchName} 并拉取`)
+  // 切换到对应分支
+  checkoutFromRemoteBranch(branchName)
+  endLoading()
+  console.log(
+    `${chalk.green('✅ OK')} Now switched to the working branch ${chalk.blue(branchName)}.`,
+  )
 }
 
 export async function end(key: string, options: IssueToggleParams) {
   const { repo, base, head } = options
   const client = createApolloClient()
+  startLoading('Processing')
   await client.mutate({
     mutation: EndTask,
     variables: {
@@ -137,8 +159,12 @@ export async function end(key: string, options: IssueToggleParams) {
       head,
     },
   })
-  // TODO: 切换到base分支
-  console.log(`-> 切换到本地分支 ${base} 并拉取`)
+  // 切换到base分支
+  checkoutFromRemoteBranch(base)
+  endLoading()
+  console.log(
+    `${chalk.green('✅ OK')} Now switched to the base branch ${chalk.blue(base)}.`,
+  )
 }
 
 export async function setup() {
@@ -161,6 +187,7 @@ export async function setup() {
   ])
   saveAppToken(token)
   const client = createApolloClient()
+  startLoading()
   await client.mutate({
     mutation: ConfigureAccount,
     variables: {
@@ -170,6 +197,7 @@ export async function setup() {
       },
     },
   })
+  endLoading()
 }
 
 function saveAppToken(token: string) {

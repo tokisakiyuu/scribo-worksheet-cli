@@ -37,11 +37,13 @@
     "@apollo/client": "^3.9.9",
     "@types/memoizee": "^0.4.11",
     "@types/prompts": "^2.4.9",
+    "chalk": "^5.3.0",
     "commander": "^12.0.0",
     "graphql": "^16.8.1",
     "inquirer": "^9.2.17",
     "memoizee": "^0.4.15",
     "open": "^10.1.0",
+    "ora": "^8.0.1",
     "prompts": "^2.4.2"
   }
 }

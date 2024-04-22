@@ -1,5 +1,14 @@
 import { execSync } from 'node:child_process'
 
+function exec(command: string) {
+  execSync(command, {
+    stdio: ['inherit', 'ignore'],
+    windowsHide: true,
+    cwd: process.cwd(),
+    env: process.env,
+  })
+}
+
 export function currentGitBranchName() {
   return execSync('git name-rev --name-only HEAD').toString().trim()
 }
@@ -33,10 +42,10 @@ export function getCurrentGitLocalBranchList() {
 export function checkoutFromRemoteBranch(branchName: string) {
   const localBranches = getCurrentGitLocalBranchList()
   if (localBranches.includes(branchName)) {
-    execSync(`git checkout ${branchName}`)
+    exec(`git checkout ${branchName}`)
   } else {
-    execSync(`git fetch`)
-    execSync(`git checkout -b ${branchName} origin/${branchName}`)
+    exec('git fetch')
+    exec(`git checkout -b ${branchName} origin/${branchName}`)
   }
-  execSync('git pull')
+  exec('git pull')
 }

@@ -138,9 +138,9 @@ export async function start(key: string, options: IssueToggleParams) {
       head: branchName,
     },
   })
+  endLoading()
   // 切换到对应分支
   checkoutFromRemoteBranch(branchName)
-  endLoading()
   console.log(
     `${chalk.green('✅ OK')} Now switched to the working branch ${chalk.blue(branchName)}.`,
   )
@@ -159,9 +159,9 @@ export async function end(key: string, options: IssueToggleParams) {
       head,
     },
   })
+  endLoading()
   // 切换到base分支
   checkoutFromRemoteBranch(base)
-  endLoading()
   console.log(
     `${chalk.green('✅ OK')} Now switched to the base branch ${chalk.blue(base)}.`,
   )
